@@ -44,6 +44,24 @@ export class LineService {
     }
   }
 
+  filterStops(filter: StopFilter): TransitStop[] {
+    const matchingStops: TransitStop[] = []
+
+    Object.values(LINES).forEach(line => {
+      line.stops.forEach(stop => {
+        const matches = Object.entries(filter).every(([key, value]) => {
+          return stop[key as keyof TransitStop] === value
+        })
+
+        if (matches) {
+          matchingStops.push(stop)
+        }
+      })
+    })
+
+    return matchingStops
+  }
+
   updateLine(lineId: string, stops: TransitStop[]): boolean {
     if (!this.hasLine(lineId)) {
       return false
