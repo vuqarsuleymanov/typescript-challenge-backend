@@ -31,7 +31,37 @@ export class LineService {
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   addLine(newLineId: string, stops: TransitStop[]): void {
-    // TODO
+    if (!newLineId || !stops || stops.length === 0) {
+      throw new Error('Line ID and stops are required')
+    }
+    LINES[newLineId] = {
+      id: newLineId,
+      stops: stops.map((stop, index) => {
+        const prevId = index > 0 ? stops[index - 1].id : null
+        const nextId = index < stops.length - 1 ? stops[index + 1].id : null
+        return { ...stop, prevId, nextId }
+      }),
+    }
+  }
+
+  updateLine(lineId: string, stops: TransitStop[]): boolean {
+    if (!this.hasLine(lineId)) {
+      return false
+    }
+    LINES[lineId].stops = stops.map((stop, index) => {
+      const prevId = index > 0 ? stops[index - 1].id : null
+      const nextId = index < stops.length - 1 ? stops[index + 1].id : null
+      return { ...stop, prevId, nextId }
+    })
+    return true
+  }
+
+  deleteLine(lineId: string): boolean {
+    if (this.hasLine(lineId)) {
+      delete LINES[lineId]
+      return true
+    }
+    return false
   }
 
   /**
